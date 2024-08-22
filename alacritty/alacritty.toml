@@ -1,0 +1,18 @@
+import = ["~/.config/alacritty/tokyo-night.toml"]
+
+[env]
+TERM = "xterm-256color"
+
+[font]
+normal = {family = "JetBrainsMono", style = "Reglar" }
+bold = {family = "JetBrainsMono", style = "Bold" }
+italic = {family = "JetBrainsMono", style = "Italic" }
+bold_italic = {family = "JetBrainsMono", style = "Bold Italic" }
+
+[keyboard]
+bindings = [{ key = "F11", action = "ToggleFullscreen" }]
+
+# normal = {family = "UbuntuMono Nerd Font Mono", style = "Reglar" }
+# bold = {family = "UbuntuMono Nerd Font Mono", style = "Bold" }
+# italic = {family = "UbuntuMono Nerd Font Mono", style = "Italic" }
+# bold_italic = {family = "UbuntuMono Nerd Font Mono", style = "Bold Italic" }
