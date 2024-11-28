@@ -25,18 +25,12 @@ return {
           },
           root_dir = function(fname)
             return require("lspconfig.util").root_pattern("Makefile", "CMakeLists.txt", "build.ninja")(fname)
-                or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(fname)
-                or require("lspconfig.util").find_git_ancestor(fname)
+              or require("lspconfig.util").root_pattern("compile_commands.json", "compile_flags.txt")(fname)
+              or require("lspconfig.util").find_git_ancestor(fname)
           end,
           capabilities = { offsetEncoding = { "utf-16" } },
           cmd = {
-            "clangd",
-            "--background-index",
-            "--clang-tidy",
-            "--header-insertion=iwyu",
-            "--completion-style=detailed",
-            "--function-arg-placeholders",
-            "--fallback-style=llvm",
+            "/home/prwj@fuewroclaw.com/.config/nvim/lua/plugins/run_clangd.sh",
           },
           init_options = {
             usePlaceholders = true,
