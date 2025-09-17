@@ -15,7 +15,13 @@ if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
 fi
 source ${zsh_plugins}.zsh
 
+# setup aliases
+alias ll='ls -lhG'
+alias la='ls -lahG'
 
+if [[ -d /opt/homebrew/bin ]]; then
+  export PATH="/opt/homebrew/bin:$PATH"
+fi
 
 # enable starship prompt
 eval "$(starship init zsh)"

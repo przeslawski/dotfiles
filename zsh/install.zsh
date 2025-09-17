@@ -43,6 +43,7 @@ if [[ ! -f ${ZDOTDIR}/.antidote/antidote.zsh ]]; then
   git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR}/.antidote
 fi
 
+# run zshell with current config
 zsh
 
 
