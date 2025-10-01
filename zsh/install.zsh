@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+set -x
 
 # first backup existing zsh config files 
 # found in $ZDOTDIR or $HOME if $ZDOTDIR is not set

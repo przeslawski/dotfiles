@@ -15,12 +15,23 @@ if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
 fi
 source ${zsh_plugins}.zsh
 
+#
 # setup aliases
-alias ll='ls -lhG'
-alias la='ls -lahG'
+alias ll='ls -lh --color=auto'
+alias la='ls -lah --color=auto'
+alias fd='fdfind'
 
+
+#### ENVIRONMENT VARIABLES
+#
+# add homebrew to path if running on mac with homebrew installed
 if [[ -d /opt/homebrew/bin ]]; then
   export PATH="/opt/homebrew/bin:$PATH"
+fi
+
+# load machine specific environment variables
+if [[ -f ~/machine/env ]]; then
+  source ~/machine/env
 fi
 
 # enable starship prompt
