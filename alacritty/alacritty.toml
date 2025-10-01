@@ -7,6 +7,10 @@ normal = {family = "JetBrainsMono", style = "Reglar" }
 bold = {family = "JetBrainsMono", style = "Bold" }
 italic = {family = "JetBrainsMono", style = "Italic" }
 bold_italic = {family = "JetBrainsMono", style = "Bold Italic" }
+# normal = {family = "UbuntuMono Nerd Font Mono", style = "Reglar" }
+# bold = {family = "UbuntuMono Nerd Font Mono", style = "Bold" }
+# italic = {family = "UbuntuMono Nerd Font Mono", style = "Italic" }
+# bold_italic = {family = "UbuntuMono Nerd Font Mono", style = "Bold Italic" }
 
 [keyboard]
 bindings = [{ key = "F11", action = "ToggleFullscreen" }]
@@ -14,7 +18,3 @@ bindings = [{ key = "F11", action = "ToggleFullscreen" }]
 [general]
 import = ["~/.config/alacritty/tokyo-night.toml"]
 
-# normal = {family = "UbuntuMono Nerd Font Mono", style = "Reglar" }
-# bold = {family = "UbuntuMono Nerd Font Mono", style = "Bold" }
-# italic = {family = "UbuntuMono Nerd Font Mono", style = "Italic" }
-# bold_italic = {family = "UbuntuMono Nerd Font Mono", style = "Bold Italic" }
