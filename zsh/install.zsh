@@ -2,6 +2,12 @@
 
 set -x
 
+# Arguments:
+# $1 - ZDOTDIR - directory to store zsh config files
+# defaults to ~/.config/zsh
+#
+
+
 # first backup existing zsh config files 
 # found in $ZDOTDIR or $HOME if $ZDOTDIR is not set
 # and store them in ~/.bak
@@ -24,15 +30,17 @@ done
 unset zfile zfiles
 
 # now let's install the new config files
-export ZDOTDIR=~/.config/zsh
+ZDOTDIR=${1:-"~/.config/zsh"}
 
-mkdir -p $ZDOTDIR
+
+mkdir -p $ZDOTDIR && echo "Created zsh config directory: $ZDOTDIR"
+
 # copy all but the install script itself
 cp zsh/^install.zsh $ZDOTDIR
 
 cat << 'EOF' >| ~/.zshenv
-export ZDOTDIR=~/.config/zsh
-[[ -f $ZDOTDIR/.zshenv ]] && . $ZDOTDIR/.zshenv
+export ZDOTDIR=${ZDOTDIR}
+[[ -f ${ZDOTDIR}/.zshenv ]] && . ${ZDOTDIR}/.zshenv
 EOF
 
 if [[ -f ${BACKUP}/.zsh_history ]]; then
@@ -43,6 +51,8 @@ fi
 if [[ ! -f ${ZDOTDIR}/.antidote/antidote.zsh ]]; then
   git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR}/.antidote
 fi
+
+export ZDOTDIR=$ZDOTDIR
 
 # run zshell with current config
 zsh
