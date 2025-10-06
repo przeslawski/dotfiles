@@ -51,6 +51,8 @@ fi
 # cp zsh/^install.zsh $ZDOTDIR
 
 echo "export ZDOTDIR=${ZDOTDIR}" >> ~/.zshenv
+echo "export XDG_CONFIG_HOME=${XDG_CONFIG_HOME}" >> ~/.zshenv
+echo "export DOTFILES_DIR=${DOTFILES_DIR}" >> ~/.zshenv
 echo "[[ -f ${ZDOTDIR}/.zshenv ]] && . ${ZDOTDIR}/.zshenv" >> ~/.zshenv
 
 # if [[ -f ${BACKUP}/.zsh_history ]]; then
@@ -60,6 +62,21 @@ echo "[[ -f ${ZDOTDIR}/.zshenv ]] && . ${ZDOTDIR}/.zshenv" >> ~/.zshenv
 # install antidote zsh plugin manager
 if [[ ! -f ${ZDOTDIR}/.antidote/antidote.zsh ]]; then
   git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR}/.antidote
+fi
+
+
+# nvim
+if (( $+commands[nvim] )); then
+    # TODO: check version 0.11+
+    echo "Neovim is already installed"
+else
+    echo "Installing Neovim..."
+    git clone https://github.com/neovim/neovim.git /tmp/neovim
+    pushd /tmp/neovim
+    make CMAKE_BUILD_TYPE=Release
+    sudo make CMAKE_INSTALL_PREFIX=/usr/local install
+    popd
+    rm -rf /tmp/neovim
 fi
 
 env
