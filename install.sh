@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 
 DOTFILES_DIR=$(dirname $(realpath $0))
@@ -23,8 +23,7 @@ fi
 # ln -s $(realpath ./nvim) $HOME/.config
 # ln -s $(realpath ./.tmux.conf) $HOME
 
-if command -v starship &> /dev/null
-then
+if (( $+commands[starship] )); then
     echo "Starship is already installed"
 else
     echo "Installing starship..."
@@ -38,8 +37,35 @@ fi
 alias tmux='tmux -f $XDG_CONFIG_HOME/tmux/.tmux.conf'
 export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship.toml
 
+# now let's install the new config files
+ZDOTDIR=${1:-"${DOTFILES_DIR}/zsh"}
+export ZDOTDIR=$ZDOTDIR
 
-if command -v zsh &> /dev/null
+
+if [[ ! -d $ZDOTDIR ]]; then
+mkdir -p $ZDOTDIR
+echo "Created zsh config directory: $ZDOTDIR"
+fi
+
+# copy all but the install script itself
+# cp zsh/^install.zsh $ZDOTDIR
+
+echo "export ZDOTDIR=${ZDOTDIR}" >> ~/.zshenv
+echo "[[ -f ${ZDOTDIR}/.zshenv ]] && . ${ZDOTDIR}/.zshenv" >> ~/.zshenv
+
+# if [[ -f ${BACKUP}/.zsh_history ]]; then
+#   cp ${BACKUP}/.zsh_history ${ZDOTDIR}/.zsh_history
+# fi
+
+# install antidote zsh plugin manager
+if [[ ! -f ${ZDOTDIR}/.antidote/antidote.zsh ]]; then
+  git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR}/.antidote
+fi
+
+env
+
+# if the shell is interactive, start zsh with new config
+if [[ $- == *i* ]]
 then
-    zsh ${DOTFILES_DIR}/zsh/install.zsh ${DOTFILES_DIR}/zsh
+    zsh
 fi
