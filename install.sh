@@ -50,10 +50,8 @@ fi
 # copy all but the install script itself
 # cp zsh/^install.zsh $ZDOTDIR
 
-cat << 'EOF' >| ~/.zshenv
-export ZDOTDIR=${ZDOTDIR}
-[[ -f ${ZDOTDIR}/.zshenv ]] && . ${ZDOTDIR}/.zshenv
-EOF
+echo "export ZDOTDIR=${ZDOTDIR}" >> ~/.zshenv
+echo "[[ -f ${ZDOTDIR}/.zshenv ]] && . ${ZDOTDIR}/.zshenv" >> ~/.zshenv
 
 # if [[ -f ${BACKUP}/.zsh_history ]]; then
 #   cp ${BACKUP}/.zsh_history ${ZDOTDIR}/.zsh_history
