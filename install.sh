@@ -81,5 +81,8 @@ fi
 
 env
 
-# run zshell with current config
-zsh
+# if the shell is interactive, start zsh with new config
+if [[ $- == *i* ]]
+then
+    zsh
+fi
