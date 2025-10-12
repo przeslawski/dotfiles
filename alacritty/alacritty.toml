@@ -13,7 +13,9 @@ bold_italic = {family = "JetBrainsMono", style = "Bold Italic" }
 # bold_italic = {family = "UbuntuMono Nerd Font Mono", style = "Bold Italic" }
 
 [keyboard]
-bindings = [{ key = "F11", action = "ToggleFullscreen" }]
+bindings = [{ key = "F11", action = "ToggleFullscreen"},
+{ key = "N", mods = "Control|Shift", action = "CreateNewWindow" },
+]
 
 [general]
 import = ["~/.config/alacritty/tokyo-night.toml"]
