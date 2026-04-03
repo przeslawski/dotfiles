@@ -157,6 +157,11 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldtext = 'v:lua.vim.treesitter.foldtext()'
+vim.opt.foldlevelstart = 99
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -404,6 +409,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>sF', function()
+        builtin.find_files { no_ignore = true }
+      end, { desc = '[S]earch [F]iles no-ignore' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -601,7 +609,7 @@ require('lazy').setup({
 
           -- NOTE: only viable for clangd
           -- FIXME: only apply it when clangd detected
-          map('<leader><S-Tab>', '<cmd>ClangdSwitchSourceHeader<cr>', 'Switch Source/Header (C/C++)')
+          map('<leader><S-Tab>', '<cmd>LspClangdSwitchSourceHeader<cr>', 'Switch Source/Header (C/C++)')
         end,
       })
 
@@ -932,6 +940,7 @@ require('lazy').setup({
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
   require 'custom.plugins.copilot-chat',
   require 'custom.plugins.copilot',
+  require 'custom.plugins.symbols',
   require 'custom.plugins.tmux',
   require 'custom.plugins.format',
 
