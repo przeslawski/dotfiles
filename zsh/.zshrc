@@ -36,3 +36,6 @@ fi
 
 # enable starship prompt
 eval "$(starship init zsh)"
+
+# opencode
+export PATH=/home/prwj@fuewroclaw.com/.opencode/bin:$PATH

@@ -64,5 +64,27 @@ return {
       -- You can use 'stop_after_first' to run the first available formatter from the list
       -- javascript = { "prettierd", "prettier", stop_after_first = true },
     },
+    formatters = {
+      ['clang-format'] = {
+        inherit = false,
+        command = 'clang-format',
+        args = {
+          '-assume-filename',
+          '$FILENAME',
+        },
+        range_args = function(self, ctx)
+          local start_offset, end_offset = require('conform.util').get_offsets_from_range(ctx.buf, ctx.range)
+          local length = end_offset - start_offset
+          return {
+            '-assume-filename',
+            '$FILENAME',
+            '--offset',
+            tostring(start_offset),
+            '--length',
+            tostring(length),
+          }
+        end,
+      },
+    },
   },
 }

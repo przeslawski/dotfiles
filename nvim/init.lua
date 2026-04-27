@@ -340,7 +340,6 @@ require('lazy').setup({
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
-    branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -469,8 +468,19 @@ require('lazy').setup({
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP.
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { -- LSP progress UI
+        'j-hui/fidget.nvim',
+        opts = {
+          progress = {
+            suppress_on_insert = false,
+            ignore_done_already = false,
+            display = {
+              done_icon = 'OK',
+              progress_icon = { pattern = 'dots' },
+            },
+          },
+        },
+      },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -607,11 +617,22 @@ require('lazy').setup({
             end, '[T]oggle Inlay [H]ints')
           end
 
-          -- NOTE: only viable for clangd
-          -- FIXME: only apply it when clangd detected
-          map('<leader><S-Tab>', '<cmd>LspClangdSwitchSourceHeader<cr>', 'Switch Source/Header (C/C++)')
+          if client and client.name == 'clangd' then
+            map('<leader><S-Tab>', '<cmd>LspClangdSwitchSourceHeader<cr>', 'Switch Source/Header (C/C++)')
+          end
         end,
       })
+
+      vim.api.nvim_create_user_command('LspProgress', function()
+        local status = vim.lsp.status()
+        if status == nil or status == '' then
+          vim.notify('No active LSP background work', vim.log.levels.INFO, { title = 'LSP' })
+        else
+          vim.notify(status, vim.log.levels.INFO, { title = 'LSP Progress' })
+        end
+      end, { desc = 'Show current LSP progress' })
+
+      vim.keymap.set('n', '<leader>lp', '<cmd>LspProgress<CR>', { desc = 'LSP: Show [P]rogress' })
 
       -- Change diagnostic symbols in the sign column (gutter)
       -- if vim.g.have_nerd_font then
@@ -630,95 +651,68 @@ require('lazy').setup({
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      -- Enable the following language servers
-      --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-      --
-      --  Add any additional override configuration in the following tables. Available keys are:
-      --  - cmd (table): Override the default command used to start the server
-      --  - filetypes (table): Override the default list of associated filetypes for the server
-      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-      --  - settings (table): Override the default settings passed when initializing the server.
-      --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      local clangd_capabilities = vim.deepcopy(capabilities)
+      clangd_capabilities.general = clangd_capabilities.general or {}
+      clangd_capabilities.general.positionEncodings = { 'utf-16' }
 
-      -- vim.notify(os.getenv 'CXX' or 'CXX NOT SET!', vim.log.levels.ERROR)
-      -- local function get_clangd_query_driver()
-      --   local cxx = os.getenv 'CXX'
-      --   if cxx and string.len(cxx) ~= 0 then
-      --     -- I have no idea how to make it simpler :/
-      --     local words = {}
-      --     for word in cxx:gmatch '%g+%s-' do
-      --       words:insert(word)
-      --       vim.notify(words[1], vim.log.levels.ERROR)
-      --     end
-      --     return ''
-      --   end
-      --   return ''
-      -- end
-      local servers = {
-        clangd = {
-          cmd = {
-            'clangd',
-            '--background-index',
-            '--offset-encoding=utf-16',
-            '--query-driver=/workspaces/obng-workspace/sdk-host/sysroots/x86_64-pokysdk-linux/usr/bin/x86_64-poky-linux/x86_64-poky-linux-g++',
-            -- get_clangd_query_driver(),
-          },
+      local clangd_host_cmd = {
+        '/usr/bin/clangd',
+        '--clang-tidy',
+        '--background-index',
+        '--background-index-priority=normal',
+        '--path-mappings=/home/prwj@fuewroclaw.com/work/hems-embedded=/home/ubuntu/hems-embedded',
+        -- '--log=verbose',
+        '-j=2',
+      }
+
+      vim.lsp.config.clangd = {
+        cmd = clangd_host_cmd,
+        cmd_env = {
+          XDG_CACHE_HOME = vim.fn.expand '~/.cache',
         },
-        -- gopls = {},
-        pyright = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
+        capabilities = clangd_capabilities,
+        root_markers = { '.clangd', 'compile_commands.json' },
+        filetypes = { 'c', 'cpp' },
+      }
+      vim.lsp.enable 'clangd'
 
-        lua_ls = {
-          -- cmd = {...},
-          -- filetypes = { ...},
-          -- capabilities = {},
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
+      vim.lsp.config.lua_ls = {
+        cmd = { 'lua-language-server' },
+        capabilities = capabilities,
+        filetypes = { 'lua' },
+        settings = {
+          Lua = {
+            completion = {
+              callSnippet = 'Replace',
             },
+            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+            -- diagnostics = { disable = { 'missing-fields' } },
           },
         },
       }
+      vim.lsp.enable 'lua_ls'
 
-      -- Ensure the servers and tools above are installed
-      --  To check the current status of installed tools and/or manually install
-      --  other tools, you can run
-      --    :Mason
-      --
-      --  You can press `g?` for help in this menu.
+      vim.lsp.config.pyright = {
+        cmd = { 'pyright-langserver', '--stdio' },
+        capabilities = capabilities,
+        filetypes = { 'python' },
+      }
+      vim.lsp.enable 'pyright'
+
       require('mason').setup()
 
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
+      local ensure_auto_installed = {
+        'lua-language-server', -- Lua LSP server, for Neovim configuration and Lua development
+        'pyright', -- Python LSP server
         'stylua', -- Used to format Lua code
-      })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+        -- 'clangd', -- C/C++ LSP server
+        -- 'clang-format', -- Used to format C/C++ code
+        'shfmt', -- Used to format shell scripts
+      }
+      require('mason-tool-installer').setup { ensure_installed = ensure_auto_installed }
 
       require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        automatic_enable = false,
       }
     end,
   },
@@ -943,6 +937,7 @@ require('lazy').setup({
   require 'custom.plugins.symbols',
   require 'custom.plugins.tmux',
   require 'custom.plugins.format',
+  require 'custom.plugins.opencode',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.

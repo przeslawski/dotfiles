@@ -19,27 +19,48 @@ local prompts = {
   Concise = 'Please rewrite the following text to make it more concise.',
 }
 
+-- {
+--   "github/copilot.vim",
+--   enabled = false,
+--   config = function()
+--     vim.keymap.set("i", "<C-l>", 'copilot#Accept("\\<CR>")', {
+--       expr = true,
+--       replace_keycodes = false,
+--     })
+--     -- TODO: put those in keymaps.lua if needed, won't work here
+--     -- vim.g.copilot_no_tab_map = true
+--     -- vim.g.copilot_assume_mapped = true
+--   end,
+-- },
 return {
+  {
+    'CopilotC-Nvim/CopilotChat.nvim',
+    dependencies = {
+      { 'nvim-lua/plenary.nvim', branch = 'master' },
+    },
+    build = 'make tiktoken',
+    opts = {
+      -- See Configuration section for options
 
-  -- {
-  --   "github/copilot.vim",
-  --   enabled = false,
-  --   config = function()
-  --     vim.keymap.set("i", "<C-l>", 'copilot#Accept("\\<CR>")', {
-  --       expr = true,
-  --       replace_keycodes = false,
-  --     })
-  --     -- TODO: put those in keymaps.lua if needed, won't work here
-  --     -- vim.g.copilot_no_tab_map = true
-  --     -- vim.g.copilot_assume_mapped = true
-  --   end,
-  -- },
+      model = 'gpt-4.1', -- AI model to use
+      temperature = 0.1, -- Lower = focused, higher = creative
+      window = {
+        layout = 'vertical', -- 'vertical', 'horizontal', 'float'
+        width = 0.5, -- 50% of screen width
+      },
+      auto_insert_mode = true, -- Enter insert mode when opening
+    },
+  },
+}
+
+--[[ 
+return {
 
   -- { import = 'plugins.copilot' }, -- Or use { import = "lazyvim.plugins.extras.coding.copilot" },
   {
     -- dir = IS_DEV and "~/Projects/research/CopilotChat.nvim" or nil,
     'CopilotC-Nvim/CopilotChat.nvim',
-    version = 'v2.10.1',
+    version = 'v4.7.4',
     -- branch = "canary", -- Use the canary branch if you want to test the latest features but it might be unstable
     -- Do not use branch and version together, either use branch or version
     dependencies = {
@@ -260,3 +281,4 @@ return {
     },
   },
 }
+]]

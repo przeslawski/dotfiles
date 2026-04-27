@@ -23,14 +23,18 @@ return {
         ['TelescopePrompt'] = false,
       }
 
+      vim.g.copilot_version = 'latest'
+
       -- Set to true to assume that copilot is already mapped
       vim.g.copilot_assume_mapped = true
       -- Set workspace folders
       vim.g.copilot_workspace_folders = '~/work'
 
+      vim.g.copilot_enterprise_uri = 'https://github.com'
+
       -- Setup keymaps
       local keymap = vim.keymap.set
-      local opts = { silent = true }
+      local opts = { silent = false }
 
       -- Set <C-y> to accept copilot suggestion
       keymap('i', '<C-y>', 'copilot#Accept("\\<CR>")', { expr = true, replace_keycodes = false })
@@ -45,6 +49,18 @@ return {
 
       -- Set <C-d> to dismiss suggestion
       keymap('i', '<C-d>', '<Plug>(copilot-dismiss)', opts)
+
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        pattern = 'solarized',
+        -- group = ...,
+        callback = function()
+          vim.api.nvim_set_hl(0, 'CopilotSuggestion', {
+            fg = '#555555',
+            ctermfg = 8,
+            force = true,
+          })
+        end,
+      })
     end,
   },
   -- Add status line icon for copilot
